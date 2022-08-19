@@ -18,13 +18,14 @@ class Scrape(object):
         :param url: parameter for starting the chrome headless browser
         """
         self.url = url
-        print("Base class init has been called")
+        print("🔥Starting chrome driver with headless browser")
         try:
             path = '{}:{}'.format(os.getenv('PATH'), "/opt/homebrew/lib/node_modules/webdriver-manager/selenium/")
             os.environ["PATH"] = path
             start_chrome(self.url, headless=True)
-        except RuntimeError:
-            print("Started Chrome Driver")
+        except RuntimeError as e:
+            print("Error in starting Chrome Driver")
+            print(e)
         finally:
-            print("Run this always")
+            print("Chrome driver started")
 
