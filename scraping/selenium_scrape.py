@@ -11,14 +11,18 @@ import os
 from helium import *
 
 
-class Scrape(object):
+class SeleniumScrape(object):
+    def __del__(self):
+        kill_browser()
+        print("❌ Destroyed headless browser")
+
     def __init__(self, url):
         """
 
         :param url: parameter for starting the chrome headless browser
         """
         self.url = url
-        print("🔥Starting chrome driver with headless browser")
+        print("🔥 Starting chrome driver with headless browser")
         try:
             path = '{}:{}'.format(os.getenv('PATH'), "/opt/homebrew/lib/node_modules/webdriver-manager/selenium/")
             os.environ["PATH"] = path
@@ -29,3 +33,5 @@ class Scrape(object):
         finally:
             print("Chrome driver started")
 
+    def scrape(self):
+        print("🟡 Please provide class to scrape")

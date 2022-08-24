@@ -1,19 +1,11 @@
 import pandas as pd
-import os
-from helium import *
-from bs4 import BeautifulSoup
 from pandas import DataFrame
 from datetime import datetime, timedelta
 from scraping import *
 from pathlib import Path
 
 
-class Mountainwest(Scrape):
-    def __del__(self):
-        kill_browser()
-        print("❌ Destroyed headless browser")
-        print(f"🟩 Moutain west csv successfully exported to {datetime.today().strftime('%Y')} folder")
-
+class Mountainwest(SeleniumScrape):
     def __init__(self, url, drop_column_regex, days, table_element_to_exist: str
                  , search_input_field: str
                  , search_button: str
@@ -29,16 +21,19 @@ class Mountainwest(Scrape):
         self.search_button = search_button
         self.table_element_class = table_element_class
         self.date_list = pd.date_range(start=date_days_ago, end=datetime.today()).tolist()
+        # self.scraper.py = type(self).__name__.lower()
 
     @profile
     def scrape(self):
         try:
             self.__scrape()
+            print(f"🟩 Mountain west csv successfully exported to {datetime.today().strftime('%Y')} folder")
         except RuntimeError as e:
             print("Internal Server error")
             print(e)
         finally:
             print("✅Scraping completed")
+
 
     def __scrape(self):
         for date in self.date_list:
@@ -80,12 +75,14 @@ class Mountainwest(Scrape):
                       , dataframe: DataFrame
                       , date: datetime
                       , save_into_dir: str):
+
+        scraper = type(self).__name__.lower()
         try:
             year = date.strftime("%Y")
             month = date.strftime("%m")
             day = date.strftime("%d")
 
-            path = os.path.join(os.getcwd(), "csv", year, month, day)
+            path = os.path.join(os.getcwd(), scraper, year, month, day)
             Path(path).mkdir(parents=True, exist_ok=True)
             csv = os.path.join(path, f"{date.strftime('%Y-%m-%d')}.csv")
             dataframe.to_csv(csv)

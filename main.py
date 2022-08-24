@@ -1,20 +1,25 @@
 from helium import *
-from portals.mountainwest import Mountainwest
+from scrapers.mountainwest import Mountainwest
 from helium import *
+from scrapers.scraper import SeleniumScrape, Scraper
 
 
 def main():
-    url = "https://pipeview.questar.com:8443/ords/f?p=560:11:::::P0_PIPELINE,P0_CYCLE,P0_REQUESTOR:MWP,1,WEB:"
+    """
+    Example -
+        python main.py --scrape mountainview
+        python main.py --scrape rosarito
 
-    mountainwest = Mountainwest(
-        url=url
-        , drop_column_regex='Unnamed', days=30
-        , table_element_to_exist="table.t13Standard"
-        , search_input_field="#P11_EFF_DATE"
-        , search_button="Submit Report"
-        , table_element_class=".t13Standard"
-    )
-    mountainwest.scrape()
+    :return:
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Create a parser schema')
+    parser.add_argument('--scrape', metavar='path', required=True, help='the path to workspace')
+    args = parser.parse_args()
+
+    scraper = Scraper(args)
+    scraper.scrape()
 
 
 if __name__ == "__main__":
