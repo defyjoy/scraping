@@ -9,7 +9,7 @@ urls = {
         "https://pipeview.questar.com:8443/ords/f?p=560:11:::::P0_PIPELINE,P0_CYCLE,P0_REQUESTOR:MWP,1,WEB:",
     "ienova_rosarito":
         "https://gasoductos.avantgardportal.com/ipws/rest/external/livepostings?menuId=-5600002&ownerId=1020",
-    "tigertransfer": "https://tigertransfer.energytransfer.com/ipost/TGR/capacity/operationally-available?max=ALL"
+    "tigertransfer": "https://tigertransfer.energytransfer.com/ipost/TGR/capacity/operationally-available?max=ALL",
 }
 
 
@@ -45,5 +45,3 @@ class Scraper:
         tiger_transfer = TigerTransfer(url=urls[self.args.scrape], days=1,
                                        html_table_element="#operationallyAvailableTable")
         tiger_transfer.start_scrape()
-
-
