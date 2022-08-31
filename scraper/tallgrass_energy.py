@@ -33,14 +33,13 @@ class TallgrassEnergy(PipelineScraper):
         ('page', '1')
     ]
 
-    def __init__(self, query_date: datetime, cycle: int, job_id):
+    def __init__(self, job_id):
         PipelineScraper.__init__(self, job_id, web_url=self.api_url, source=self.source)
-        self.scrape_date = query_date
-        self.cycle = cycle
-        self.query_params_payload.append(tuple(('startDate', self.scrape_date.strftime("%m/%d/%Y"))))
-        self.query_params_payload.append(tuple(('endDate', self.scrape_date.strftime("%m/%d/%Y"))))
-        self.query_params_payload.append(tuple(('cycleId', self.cycle)))
-
+        # self.scrape_date = query_date
+        # self.cycle = cycle
+        # self.query_params_payload.append(tuple(('startDate', self.scrape_date.strftime("%m/%d/%Y"))))
+        # self.query_params_payload.append(tuple(('endDate', self.scrape_date.strftime("%m/%d/%Y"))))
+        # self.query_params_payload.append(tuple(('cycleId', self.cycle)))
 
     def add_columns(self, df_data, data_json):
         tsp, tsp_name, post_datetime, effective_gas_datetime, measurement_basis_description = self.get_tsp_info(
@@ -78,15 +77,20 @@ class TallgrassEnergy(PipelineScraper):
         measurement_basis_description = df['Meas Basis Desc'].iat[0]
         return tsp, tsp_name, post_datetime, effective_gas_datetime, measurement_basis_description
 
-    def start_scraping(self, post_date: date = None):
+    def start_scraping(self, post_date: date = None, cycle: int = None):
         try:
             logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
-            # print(self.query_params_payload)
-            # return
+
+            self.query_params_payload.append(tuple(('startDate', post_date.strftime("%m/%d/%Y"))))
+            self.query_params_payload.append(tuple(('endDate', post_date.strftime("%m/%d/%Y"))))
+            self.query_params_payload.append(tuple(('cycleId', cycle)))
+
             response = self.session.post(self.post_url, params=self.query_params_payload)
             response.raise_for_status()
-            print(response.request.url)
             response_json = response.json()
+            print(response.request.url)
+            print(response_json)
+
             if len(response_json['rows']) == 0:
                 raise SystemExit("NO DATA FOUND")
             columns = response_json['rows']
@@ -123,19 +127,22 @@ def back_fill_pipeline_date():
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Create a parser schema')
-    parser.add_argument('--date', metavar='path', nargs='?', default=str(date.today()),
-                        help='date for scraping.default is today(current date)')
-    parser.add_argument('--cycle', metavar='path', nargs='?', default=10301,
-                        help='cycle for scraping.default is final=5')
+    # parser = argparse.ArgumentParser(description='Create a parser schema')
+    # parser.add_argument('--date', metavar='path', nargs='?', default=str(date.today()),
+    #                     help='date for scraping.default is today(current date)')
+    # parser.add_argument('--cycle', metavar='path', nargs='?', default=10301,
+    #                     help='cycle for scraping.default is final=5')
+    #
+    # args = parser.parse_args()
+    #
+    # query_date = datetime.fromisoformat(args.date) if args.date is not None else date.today()
+    # cycle = args.cycle
 
-    args = parser.parse_args()
+    query_date = datetime.fromisoformat("2022-08-30")
+    cycle = 10301
 
-    query_date = datetime.fromisoformat(args.date) if args.date is not None else date.today()
-    cycle = args.cycle
-
-    scraper = TallgrassEnergy(query_date=query_date, cycle=cycle, job_id=str(uuid.uuid4()))
-    scraper.start_scraping()
+    scraper = TallgrassEnergy(job_id=str(uuid.uuid4()))
+    scraper.start_scraping(post_date=query_date, cycle=cycle)
     scraper.scraper_info()
 
 
