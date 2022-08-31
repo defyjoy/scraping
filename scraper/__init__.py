@@ -27,7 +27,7 @@ class PipelineScraper:
     def _get_local_output_file_path(self, post_date: date):
         if post_date is None:
             post_date = date.today()
-        _file_name = f'{self._output_folder}/{self.source}_data_{post_date}_{datetime.now().timestamp()}.csv'
+        _file_name = f'{self._output_folder}/{self.source}_data_{post_date.strftime("%Y-%m-%d")}_{datetime.now().timestamp()}.csv'
         return _file_name
 
     def save_result(self, df_result: DataFrame, post_date: date, db_table_name: str = None,

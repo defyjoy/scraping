@@ -2,8 +2,11 @@ import uuid
 import logging
 import pandas as pd
 from io import StringIO
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from bs4 import BeautifulSoup
+import argparse
+import requests
+from requests import Response
 
 from scraper import PipelineScraper
 
@@ -19,23 +22,27 @@ class TigerTransfer(PipelineScraper):
     get_url = f'https://tigertransfer.energytransfer.com/ipost/TGR/capacity/operationally-available?max=ALL'
     download_csv_url = f'https://tigertransfer.energytransfer.com/ipost/TGR/capacity/operationally-available?max=ALL'
     tsp_info_element = "section.copy > h2"
+    posting_info_element = "section.copy > p.pad"
 
     params = [
         ('f', 'csv'),
         ('extension', 'csv'),
         ('asset', 'FEP'),
-        ('gasDay', date.today().strftime('%m/%d/%Y')),
-        ('cycle', 1),
+        # ('gasDay', date.today().strftime('%m/%d/%Y')),
+        ('cycle', 5),
         ('searchType', 'NOM'),
         ('searchString', ''),
         ('locType', 'ALL'),
         ('locZone', 'ALL')
     ]
 
-    def __init__(self, job_id):
+    def __init__(self, date_arg: datetime, job_id: str):
         PipelineScraper.__init__(self, job_id, web_url=self.api_url, source=self.source)
+        self.scrape_date = date_arg
+        self.params.append(tuple(('gasDay', self.scrape_date.strftime("%m/%d/%Y"))))
 
     def get_tsp_info(self, soup: BeautifulSoup):
+        # select the TSP tag and get data
         tsp_tag = soup.select_one(self.tsp_info_element)
         tsp_text = list(map(str.strip, tsp_tag.text.split(',')))
 
@@ -45,7 +52,10 @@ class TigerTransfer(PipelineScraper):
         # 1st element is TSP
         tsp = tsp_text[1].split(':')[1].strip().replace(')', '')
 
-        posting_info = soup.select("section.copy > p.pad")
+        # select the posting info elements. Post Datetime / Eff gas day/time and Measurement basis description
+        posting_info = soup.select(self.posting_info_element)
+        print(posting_info)
+
         # 0th element is post datetime
         post_datetime = list(
             map(str.strip, posting_info[0].text.split(sep=':', maxsplit=1)))[1]
@@ -61,8 +71,18 @@ class TigerTransfer(PipelineScraper):
         return tsp, tsp_name, post_datetime, effective_gas_datetime, measurement_basis_description
 
     def add_columns(self, df_data):
-        response = self.session.get(self.get_url)
-        soup = BeautifulSoup(response.text, 'lxml')
+        data = {
+            "gasDay": self.scrape_date.strftime("%m/%d/%Y"),
+            "cycle": "0",
+            "searchType": "NOM",
+            "searchString": "",
+            "locType": "ALL",
+            "locZone": "ALL"
+        }
+
+        response = self.session.post(self.download_csv_url, data=data)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'lxml')
 
         tsp, tsp_name, post_datetime, effective_gas_datetime, measurement_basis_description = self.get_tsp_info(soup)
 
@@ -76,14 +96,14 @@ class TigerTransfer(PipelineScraper):
 
     def start_scraping(self, post_date: date = None):
         try:
-            logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
-            response = self.session.get(self.download_csv_url, params=self.params)
+            logger.info('Scraping %s pipeline gas for post date: %s', self.source, self.scrape_date)
+            response = self.session.post(self.download_csv_url, data=self.params)
             response.raise_for_status()
             html_text = response.text
             csv_data = StringIO(html_text)
             df_result = pd.read_csv(csv_data)
             final_report = self.add_columns(df_result)
-            self.save_result(final_report, post_date=post_date, local_file=True)
+            self.save_result(final_report, post_date=self.scrape_date, local_file=True)
 
             logger.info('File saved. end of scraping: %s', self.source)
         except Exception as ex:
@@ -95,12 +115,18 @@ def back_fill_pipeline_date():
     scraper = TigerTransfer(job_id=str(uuid.uuid4()))
     for i in range(90, -1, -1):
         post_date = (date.today() - timedelta(days=i))
-        print(post_date)
         scraper.start_scraping(post_date)
 
 
 def main():
-    scraper = TigerTransfer(job_id=str(uuid.uuid4()))
+    parser = argparse.ArgumentParser(description='Create a parser schema')
+    parser.add_argument('--date', metavar='path', nargs='?', default=str(date.today()), help='the path to workspace')
+    args = parser.parse_args()
+    if args.date is None:
+        logger.info("Date variable not provided. Querying the default date today.")
+    query_date = datetime.fromisoformat(args.date) if args.date is not None else date.today()
+
+    scraper = TigerTransfer(query_date, job_id=str(uuid.uuid4()))
     scraper.start_scraping()
     scraper.scraper_info()
 
