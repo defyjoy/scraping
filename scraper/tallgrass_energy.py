@@ -28,9 +28,6 @@ class TallgrassEnergy(PipelineScraper):
         ('searchInd', 0),
         ('showLatestInd', 0),
         ('nd', 1661953188765),
-        # ('cycleId', 10301), # 10301 is timely. There are no final as of now
-        # ('startDate', date.today().strftime('%m/%d/%Y')),
-        # ('endDate', date.today().strftime('%m/%d/%Y')),
         ('_search', 'false'),
         ('rows', '10000'),
         ('page', '1')
