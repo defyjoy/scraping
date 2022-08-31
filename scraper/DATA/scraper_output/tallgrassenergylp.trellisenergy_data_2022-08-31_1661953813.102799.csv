@@ -1,0 +1,6 @@
+tsp,tsp_name,post_datetime,effective_gas_datetime,measurement_basis_description,loc_hidden,Loc Name,Loc,Loc Prop,Loc Purp Desc,Flow Ind,Loc/QTI,All Qty Avail,DC,OPC,TSQ,OAC,IT,Qty Reason
+100670676,"Cheyenne Connector, LLC",08/30/2022 05:35:33 PM,08/31/2022,MMBtu,2,Kerr-McGee/Connector Lancaster Weld,,60350,Receipt Location,R,MLQ,Y,300000,310500,136097,174403,N,
+100670676,"Cheyenne Connector, LLC",08/30/2022 05:35:33 PM,08/31/2022,MMBtu,3,Kerr-McGee/Connector Latham Weld,,60351,Receipt Location,R,MLQ,Y,400000,414000,352072,61928,N,
+100670676,"Cheyenne Connector, LLC",08/30/2022 05:35:33 PM,08/31/2022,MMBtu,4,DCP/Connector Mewbourn Weld,,60352,Receipt Location,R,MLQ,Y,200000,207000,43225,163775,N,
+100670676,"Cheyenne Connector, LLC",08/30/2022 05:35:33 PM,08/31/2022,MMBtu,5,DCP/Connector O'Connor Weld,,60353,Receipt Location,R,MLQ,Y,300000,310500,180308,130192,N,
+100670676,"Cheyenne Connector, LLC",08/30/2022 05:35:33 PM,08/31/2022,MMBtu,6,Connector/REX Weld,,60345,Delivery Location,D,MLQ,Y,928000,1000000,711702,288298,N,Cap changed on 12/17/20 DAP 2/3/21

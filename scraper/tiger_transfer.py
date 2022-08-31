@@ -29,17 +29,19 @@ class TigerTransfer(PipelineScraper):
         ('extension', 'csv'),
         ('asset', 'FEP'),
         # ('gasDay', date.today().strftime('%m/%d/%Y')),
-        ('cycle', 5),
+        # ('cycle', 5),
         ('searchType', 'NOM'),
         ('searchString', ''),
         ('locType', 'ALL'),
         ('locZone', 'ALL')
     ]
 
-    def __init__(self, date_arg: datetime, job_id: str):
+    def __init__(self, query_date: datetime, cycle: str, job_id: str):
         PipelineScraper.__init__(self, job_id, web_url=self.api_url, source=self.source)
-        self.scrape_date = date_arg
+        self.scrape_date = query_date
+        self.cycle = cycle
         self.params.append(tuple(('gasDay', self.scrape_date.strftime("%m/%d/%Y"))))
+        self.params.append(tuple(('cycle', self.cycle)))
 
     def get_tsp_info(self, soup: BeautifulSoup):
         # select the TSP tag and get data
@@ -54,7 +56,6 @@ class TigerTransfer(PipelineScraper):
 
         # select the posting info elements. Post Datetime / Eff gas day/time and Measurement basis description
         posting_info = soup.select(self.posting_info_element)
-        print(posting_info)
 
         # 0th element is post datetime
         post_datetime = list(
@@ -73,7 +74,7 @@ class TigerTransfer(PipelineScraper):
     def add_columns(self, df_data):
         data = {
             "gasDay": self.scrape_date.strftime("%m/%d/%Y"),
-            "cycle": "0",
+            "cycle": self.cycle,
             "searchType": "NOM",
             "searchString": "",
             "locType": "ALL",
@@ -120,13 +121,15 @@ def back_fill_pipeline_date():
 
 def main():
     parser = argparse.ArgumentParser(description='Create a parser schema')
-    parser.add_argument('--date', metavar='path', nargs='?', default=str(date.today()), help='the path to workspace')
-    args = parser.parse_args()
-    if args.date is None:
-        logger.info("Date variable not provided. Querying the default date today.")
-    query_date = datetime.fromisoformat(args.date) if args.date is not None else date.today()
+    parser.add_argument('--date', metavar='path', nargs='?', default=str(date.today()),
+                        help='date for scraping.default is today(current date)')
+    parser.add_argument('--cycle', metavar='path', nargs='?', default=5, help='cycle for scraping. default is final=5')
 
-    scraper = TigerTransfer(query_date, job_id=str(uuid.uuid4()))
+    args = parser.parse_args()
+
+    query_date = datetime.fromisoformat(args.date) if args.date is not None else date.today()
+    cycle = args.cycle
+    scraper = TigerTransfer(query_date=query_date, cycle=cycle, job_id=str(uuid.uuid4()))
     scraper.start_scraping()
     scraper.scraper_info()
 
