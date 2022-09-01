@@ -2,7 +2,6 @@ import uuid
 import logging
 import xmltodict
 import pandas as pd
-import argparse
 from datetime import date, timedelta, datetime
 from nested_lookup import nested_lookup
 
@@ -44,11 +43,11 @@ class TallgrassEnergy(PipelineScraper):
     def add_columns(self, df_data, data_json):
         tsp, tsp_name, post_datetime, effective_gas_datetime, measurement_basis_description = self.get_tsp_info(
             data_json=data_json)
-        df_data.insert(0, "tsp", tsp, True)
-        df_data.insert(1, "tsp_name", tsp_name, True)
-        df_data.insert(2, 'post_datetime', post_datetime, True)
-        df_data.insert(3, 'effective_gas_datetime', effective_gas_datetime, True)
-        df_data.insert(4, 'measurement_basis_description', measurement_basis_description, True)
+        df_data.insert(0, "TSP", tsp, True)
+        df_data.insert(1, "TSP Name", tsp_name, True)
+        df_data.insert(2, 'Posting Date/Time', post_datetime, True)
+        df_data.insert(3, 'Eff Gas Day', effective_gas_datetime, True)
+        df_data.insert(4, 'Meas Basic Desc', measurement_basis_description, True)
         return df_data
 
     def get_tsp_info(self, data_json):
@@ -78,6 +77,7 @@ class TallgrassEnergy(PipelineScraper):
         return tsp, tsp_name, post_datetime, effective_gas_datetime, measurement_basis_description
 
     def start_scraping(self, post_date: date = None, cycle: int = None):
+        post_date = post_date if post_date is not None else date.today()
         try:
             logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
 
@@ -127,22 +127,20 @@ def back_fill_pipeline_date():
 
 
 def main():
-    # parser = argparse.ArgumentParser(description='Create a parser schema')
-    # parser.add_argument('--date', metavar='path', nargs='?', default=str(date.today()),
-    #                     help='date for scraping.default is today(current date)')
-    # parser.add_argument('--cycle', metavar='path', nargs='?', default=10301,
-    #                     help='cycle for scraping.default is final=5')
-    #
-    # args = parser.parse_args()
-    #
-    # query_date = datetime.fromisoformat(args.date) if args.date is not None else date.today()
-    # cycle = args.cycle
-
     query_date = datetime.fromisoformat("2022-08-30")
+    # 10301 - Timely
+    # 10302 - Evening
+    # 10303 - Intraday 1
+    # 10304 - Intraday 2
+    # 10305 - Intraday 5
     cycle = 10301
 
     scraper = TallgrassEnergy(job_id=str(uuid.uuid4()))
-    scraper.start_scraping(post_date=query_date, cycle=cycle)
+    # This call with parameter
+    # scraper.start_scraping(post_date=query_date, cycle=cycle)
+
+    # This call without date parameter. Use this if calling without parameter else the upper one.
+    scraper.start_scraping(cycle=cycle)
     scraper.scraper_info()
 
 

@@ -1,12 +1,8 @@
 import uuid
 import logging
-import xmltodict
 import pandas as pd
-from io import StringIO
-import argparse
 from bs4 import BeautifulSoup
-from datetime import date, timedelta, datetime
-from nested_lookup import nested_lookup
+from datetime import date, datetime
 from scraper import PipelineScraper
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -32,6 +28,7 @@ class VikingGasTransmission(PipelineScraper):
         return headers
 
     def start_scraping(self, post_date: date = None):
+        post_date = post_date if post_date is not None else date.today()
         try:
             logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
             self.params.append(
@@ -49,7 +46,6 @@ class VikingGasTransmission(PipelineScraper):
 
             self.params.append(
                 tuple(('content_1_dcDateControls_rdpEndDate_calendar_SD', [[2022, 8, 11]])))
-
 
             response = self.session.post(self.download_csv_url, data=self.params)
             response.raise_for_status()
