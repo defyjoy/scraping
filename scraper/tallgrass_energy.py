@@ -78,6 +78,7 @@ class TallgrassEnergy(PipelineScraper):
 
     def start_scraping(self, post_date: date = None, cycle: int = None):
         post_date = post_date if post_date is not None else date.today()
+        cycle = cycle if cycle is not None else 10301
         try:
             logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
 
@@ -136,11 +137,15 @@ def main():
     cycle = 10301
 
     scraper = TallgrassEnergy(job_id=str(uuid.uuid4()))
-    # This call with parameter
+    # This call with parameter , Custom date + custom cycle
     # scraper.start_scraping(post_date=query_date, cycle=cycle)
 
     # This call without date parameter. Use this if calling without parameter else the upper one.
-    scraper.start_scraping(cycle=cycle)
+    # scraper.start_scraping(cycle=cycle)
+
+    # This call without either of date or cycle parameter which takes
+    # default date = today and defautl cycle = 10301
+    scraper.start_scraping()
     scraper.scraper_info()
 
 
