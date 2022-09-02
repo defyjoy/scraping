@@ -75,9 +75,7 @@ class VikingGasTransmission(PipelineScraper):
             self.get_page_request(post_date=post_date)
 
             response = self.session.post(self.download_csv_url, data=self.params)
-            print(response.request.headers)
             response.raise_for_status()
-            print(response.status_code)
 
             soup = BeautifulSoup(response.content, 'lxml')
 
