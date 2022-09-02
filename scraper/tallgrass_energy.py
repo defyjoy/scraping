@@ -34,11 +34,6 @@ class TallgrassEnergy(PipelineScraper):
 
     def __init__(self, job_id):
         PipelineScraper.__init__(self, job_id, web_url=self.api_url, source=self.source)
-        # self.scrape_date = query_date
-        # self.cycle = cycle
-        # self.query_params_payload.append(tuple(('startDate', self.scrape_date.strftime("%m/%d/%Y"))))
-        # self.query_params_payload.append(tuple(('endDate', self.scrape_date.strftime("%m/%d/%Y"))))
-        # self.query_params_payload.append(tuple(('cycleId', self.cycle)))
 
     def add_columns(self, df_data, data_json):
         tsp, tsp_name, post_datetime, effective_gas_datetime, measurement_basis_description = self.get_tsp_info(
@@ -94,9 +89,7 @@ class TallgrassEnergy(PipelineScraper):
 
             if len(response_json['rows']) == 0:
                 raise SystemExit("NO DATA FOUND")
-            columns = response_json['rows']
             request_ids = [x['id'] for x in response_json['rows']]
-            print(request_ids)
 
             for req_id in request_ids:
                 query_params_payload = [

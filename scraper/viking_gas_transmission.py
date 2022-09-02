@@ -3,7 +3,7 @@ import json
 import logging
 import pandas as pd
 from bs4 import BeautifulSoup
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from requests import HTTPError
 
@@ -86,7 +86,7 @@ class VikingGasTransmission(PipelineScraper):
             df_result = pd.read_html(str(soup.select_one(self.html_table_css)), na_values='')[0]
             df_result.columns = headers
             final_report = self.add_columns(soup=soup, df_result=df_result)
-            self.save_result(df_result, post_date=post_date, local_file=True)
+            self.save_result(final_report, post_date=post_date, local_file=True)
         except HTTPError as ex:
             logger.error(ex, exc_info=True)
         return None
@@ -97,6 +97,14 @@ class VikingGasTransmission(PipelineScraper):
         df_result.insert(0, 'TSP', tsp, True)
         df_result.insert(1, 'TSP Name', tsp_name, True)
         return df_result
+
+
+def back_fill_pipeline_date():
+    scraper = VikingGasTransmission(job_id=str(uuid.uuid4()))
+    for i in range(90, -1, -1):
+        post_date = (date.today() - timedelta(days=i))
+        print(post_date)
+        scraper.start_scraping(post_date)
 
 
 def main():
