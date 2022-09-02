@@ -1,12 +1,13 @@
 import uuid
-import json
+import zipfile
 import logging
+
+import pandas
 import pandas as pd
-from bs4 import BeautifulSoup
 from datetime import date, datetime, timedelta
-
+from io import StringIO
 from requests import HTTPError
-
+from io import BytesIO
 from scraper import PipelineScraper
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -92,22 +93,34 @@ class BigSandy(PipelineScraper):
 
             # add files and prepare zip
             response = self.session.post(self.add_to_file_url, json=self.init_request_params)
-            print(response.json())
+            # print(response.json())
 
             # prepare server for zip request for file
             response = self.session.post(self.zip_file_url, json={'fileName': file_name})
-            print(response.content)
+            # print(response.content)
 
             local_filename = f"./DATA/scraper_output/{file_name}.zip"
             self.file_handle_params.update({'fileName': file_name})
 
+            # set param for filehandler.ashx call
             self.set_file_handle_params_date(post_date=post_date)
+
+            # this call gets the data as zip file from server
             with self.session.post(self.file_handler_url, data=self.file_handle_params,
                                    headers=self.get_page_headers, stream=True) as r:
                 r.raise_for_status()
-                with open(local_filename, 'wb') as f:
-                    f.write(r.content)
+                zip_ref = zipfile.ZipFile(BytesIO(r.content))
 
+                df_list = []
+
+                # read all csv inside the zip file
+                for name in zip_ref.namelist():
+                    with zip_ref.open(name) as file_contents:
+                        df = pd.read_csv(file_contents)
+                        df_list.append(df)
+
+                final_report = pd.concat(df_list)
+                self.save_result(final_report, post_date=post_date, local_file=True)
         except HTTPError as ex:
             logger.error(ex, exc_info=True)
         return None
