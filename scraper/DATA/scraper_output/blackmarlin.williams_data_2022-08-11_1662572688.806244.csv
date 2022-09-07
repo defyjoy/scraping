@@ -1,0 +1,5 @@
+TSP Name,Post Date/Time,Effective Gas Day/Time,Meas Basis Desc,Location,Location Name,LocationPurpose,FlowIndicator,All QtyAvail,DesignCapacity(MMBtud),OperatingCapacity(MMBtud)*,TotalScheduledQuantity,OperationallyAvailableCapacity,ITDesc,Comments
+Black Marlin Pipeline Company,08-10-2022 20:34:02,08-11-2022 9:00:00 AM,MMBTU,HPL,BK Marlin to HPL,MQ,DELIVERY,,150000,150000,0,150000,N,
+Black Marlin Pipeline Company,08-10-2022 20:34:02,08-11-2022 9:00:00 AM,MMBTU,Tejas,BK Marlin to Tejas/KM,MQ,DELIVERY,,120000,120000,0,120000,N,
+Black Marlin Pipeline Company,08-10-2022 20:34:02,08-11-2022 9:00:00 AM,MMBTU,UnCarb,BK Marlin to Union Carbide,MQ,DELIVERY,,150000,150000,0,150000,N,
+Black Marlin Pipeline Company,08-10-2022 20:34:02,08-11-2022 9:00:00 AM,MMBTU,BKMarlin,Black Marlin Mainline,M2,RECEIPT,,160000,160000,0,160000,N,

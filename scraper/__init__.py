@@ -2,6 +2,7 @@ import pathlib
 from datetime import datetime, date
 from pandas import DataFrame
 import logging
+from requests.adapters import HTTPAdapter, Retry
 
 import numpy
 import requests
@@ -13,13 +14,15 @@ logger = logging.getLogger(__name__)
 class PipelineScraper:
     _output_folder = f'{LOCAL_DATA_FOLDER}/scraper_output'
     pathlib.Path(_output_folder).mkdir(parents=True, exist_ok=True)
+    retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
+    source = ""
 
     def __init__(self, job_id, web_url, source, **kwargs):
         self.job_id = job_id
         self.web_url = web_url
         self.source = source
         self.session = requests.Session()
-
+        self.session.mount('http://', HTTPAdapter(max_retries=self.retries))
 
     def scraper_info(self):
         logger.info('Scraper: %s, web url: %s, job_id: %s', self.source, self.web_url, self.job_id)
