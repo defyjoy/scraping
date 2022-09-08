@@ -77,7 +77,7 @@ def main():
     # cycle = 4 - Intraday 2
     # cycle = 5 - Intraday 3
 
-    scraper.start_scraping(post_date=query_date,cycle=2)
+    scraper.start_scraping(post_date=query_date, cycle=2)
     scraper.scraper_info()
 
 
