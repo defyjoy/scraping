@@ -1,12 +1,10 @@
-import uuid
 import logging
-from bs4 import BeautifulSoup
-from io import StringIO
-
-import xmltodict
-import pandas as pd
+import uuid
 from datetime import date, timedelta, datetime
-from nested_lookup import nested_lookup
+
+import pandas as pd
+from bs4 import BeautifulSoup
+
 from scraper import PipelineScraper
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -17,7 +15,7 @@ class Williams(PipelineScraper):
     tsp = None
     tsp_name = None
     source_extensions = ['discovery', 'blackmarlin']
-    company = '{}.williams'
+    source = 'williams'
     base_url = 'https://{}.williams.com'
     post_url = 'https://{}.williams.com/oa_detail.jsp'
     download_csv_url = 'https://{}.williams.com/oa_detail.jsp'
@@ -25,12 +23,11 @@ class Williams(PipelineScraper):
     def __init__(self, job_id=None):
         PipelineScraper.__init__(self, job_id, web_url=self.base_url, source=self.source)
 
-    def start_scraping(self, post_date: date = None, cycle: int = None):
+    def start_scraping(self, post_date: date = None, cycle: int = 2):
         post_date = post_date if post_date is not None else date.today()
-        cycle = cycle if cycle is not None else 2
 
         for extension in self.source_extensions:
-            self.source = self.company.format(extension)
+            self.source = self.source.format(extension)
             try:
                 query_params = [
                     ('id', cycle),
@@ -72,10 +69,15 @@ def back_fill_pipeline_date():
 
 def main():
     query_date = datetime.fromisoformat("2022-08-11")
-
-    # there are no cycle to choose in Viking Gas Transmission
     scraper = Williams(job_id=str(uuid.uuid4()))
-    scraper.start_scraping(post_date=query_date)
+
+    # cycle = 1 - Timely
+    # cycle = 2 - Evening (Default value passed)
+    # cycle = 3 - Intraday 1
+    # cycle = 4 - Intraday 2
+    # cycle = 5 - Intraday 3
+
+    scraper.start_scraping(post_date=query_date,cycle=2)
     scraper.scraper_info()
 
 

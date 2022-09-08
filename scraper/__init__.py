@@ -15,7 +15,6 @@ class PipelineScraper:
     _output_folder = f'{LOCAL_DATA_FOLDER}/scraper_output'
     pathlib.Path(_output_folder).mkdir(parents=True, exist_ok=True)
     retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
-    source = ""
 
     def __init__(self, job_id, web_url, source, **kwargs):
         self.job_id = job_id
