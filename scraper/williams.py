@@ -26,14 +26,14 @@ class Williams(PipelineScraper):
     def start_scraping(self, post_date: date = None, cycle: int = 2):
         post_date = post_date if post_date is not None else date.today()
 
+        main_df = pd.DataFrame()
         for extension in self.source_extensions:
-            self.source = self.source.format(extension)
             try:
                 query_params = [
                     ('id', cycle),
                     ('nomDate', post_date.strftime('%m-%d-%Y'))
                 ]
-                logger.info('Scraping %s pipeline gas for post date: %s', self.source.format(extension), post_date)
+                logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
                 response = self.session.get(self.post_url.format(extension), params=query_params)
                 response.raise_for_status()
 
@@ -52,11 +52,14 @@ class Williams(PipelineScraper):
                 df_result.insert(2, 'Effective Gas Day/Time', effective_date, allow_duplicates=True)
                 df_result.insert(3, 'Meas Basis Desc', 'MMBTU')  # All values are MMBTU mentioned static on website.
 
-                self.save_result(df_result, post_date=post_date, local_file=True)
-                logger.info('File saved. end of scraping: %s', self.source.format(extension))
-
+                main_df = pd.concat([main_df, df_result])
             except Exception as ex:
                 logger.error(ex, exc_info=True)
+
+        logger.info('File saved. end of scraping: %s', self.source)
+        self.save_result(main_df, post_date=post_date, local_file=True)
+
+        return None
 
 
 def back_fill_pipeline_date():
