@@ -13,11 +13,12 @@ logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class VikingGasTransmission(PipelineScraper):
-    source = "vikinggastransmission.vgt.nborder"
+class OneOK(PipelineScraper):
+    source = "oneok.com"
+    source_extensions = ['vgt', 'mgt', 'gpl']
     api_url = 'https://www.oneok.com'
-    post_url = 'https://www.oneok.com/vgt/informational-postings/capacity/operationally-available'
-    download_csv_url = 'https://www.oneok.com/vgt/informational-postings/capacity/operationally-available'
+    post_url = 'https://www.oneok.com/{}/informational-postings/capacity/operationally-available'
+    download_csv_url = 'https://www.oneok.com/{}/informational-postings/capacity/operationally-available'
 
     html_header_css = ".rgHeaderDiv .rgMasterTable"
     html_table_css = ".rgDataDiv > .rgMasterTable"
@@ -31,8 +32,8 @@ class VikingGasTransmission(PipelineScraper):
         headers = [th.findNext("a").text for th in theads]
         return headers
 
-    def get_page_request(self, post_date: date = None):
-        response = self.session.get(self.post_url)
+    def get_page_request(self, ext, post_date: date = None):
+        response = self.session.get(self.post_url.format(ext))
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'lxml')
 
@@ -69,24 +70,31 @@ class VikingGasTransmission(PipelineScraper):
 
     def start_scraping(self, post_date: date = None):
         post_date = post_date if post_date is not None else date.today()
-        try:
-            logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
-            self.set_params(post_date=post_date)
-            self.get_page_request(post_date=post_date)
 
-            response = self.session.post(self.download_csv_url, data=self.params)
-            response.raise_for_status()
+        main_df = pd.DataFrame()
+        for extension in self.source_extensions:
+            try:
+                logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
+                self.set_params(post_date=post_date)
+                self.get_page_request(extension, post_date=post_date)
 
-            soup = BeautifulSoup(response.content, 'lxml')
+                response = self.session.post(self.download_csv_url.format(extension), data=self.params)
+                response.raise_for_status()
 
-            headers = self.get_headers(soup)
+                soup = BeautifulSoup(response.content, 'lxml')
 
-            df_result = pd.read_html(str(soup.select_one(self.html_table_css)), na_values='')[0]
-            df_result.columns = headers
-            final_report = self.add_columns(soup=soup, df_result=df_result)
-            self.save_result(final_report, post_date=post_date, local_file=True)
-        except HTTPError as ex:
-            logger.error(ex, exc_info=True)
+                headers = self.get_headers(soup)
+
+                df_result = pd.read_html(str(soup.select_one(self.html_table_css)), na_values='')[0]
+                df_result.columns = headers
+                final_report = self.add_columns(soup=soup, df_result=df_result)
+                main_df = pd.concat([main_df, final_report])
+
+            except HTTPError as ex:
+                logger.error(ex, exc_info=True)
+
+        self.save_result(main_df, post_date=post_date, local_file=True)
+
         return None
 
     def add_columns(self, soup, df_result):
@@ -98,7 +106,7 @@ class VikingGasTransmission(PipelineScraper):
 
 
 def back_fill_pipeline_date():
-    scraper = VikingGasTransmission(job_id=str(uuid.uuid4()))
+    scraper = OneOK(job_id=str(uuid.uuid4()))
     for i in range(90, -1, -1):
         post_date = (date.today() - timedelta(days=i))
         print(post_date)
@@ -108,8 +116,8 @@ def back_fill_pipeline_date():
 def main():
     query_date = datetime.fromisoformat("2022-08-11")
 
-    # there are no cycle to choose in Viking Gas Transmission
-    scraper = VikingGasTransmission(job_id=str(uuid.uuid4()))
+    # there are no cycles to choose from in OneOK websites
+    scraper = OneOK(job_id=str(uuid.uuid4()))
     scraper.start_scraping(post_date=query_date)
     scraper.scraper_info()
 

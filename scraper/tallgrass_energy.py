@@ -42,7 +42,7 @@ class TallgrassEnergy(PipelineScraper):
         df_data.insert(1, "TSP Name", tsp_name, True)
         df_data.insert(2, 'Posting Date/Time', post_datetime, True)
         df_data.insert(3, 'Eff Gas Day', effective_gas_datetime, True)
-        df_data.insert(4, 'Meas Basic Desc', measurement_basis_description, True)
+        df_data.insert(4, 'Meas Basis Desc', measurement_basis_description, True)
         return df_data
 
     def get_tsp_info(self, data_json):
