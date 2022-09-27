@@ -1,0 +1,25 @@
+TSP,TSP Name,Posting Date/Time,Eff Gas Day,Meas Basis Desc,Loc Name,Loc,Loc Prop,Loc Purp Desc,Flow Ind,Loc/QTI,All Qty Avail,DC,OPC,TSQ,OAC,IT,Qty Reason
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Innovation,INNOVATN,INNOVATN,Receipt Location,R,DPQ,N,,,0,,N,Design Capacity is not available
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Innovation,INNOVATN,INNOVATN,Delivery Location,D,DPQ,Y,12000.0,12000.0,0,12000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Innovation,INNOVATN,INNOVATN,Receipt Location,BD,DPQ,N,,,0,,N,Design Capacity is not available
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Martin Plant,78522,MARTPLT,Receipt Location,R,DPQ,Y,0.0,0.0,0,0.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Martin Plant,78522,MARTPLT,Delivery Location,D,DPQ,Y,400000.0,400000.0,0,400000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Martin Plant,78522,MARTPLT,Receipt Location,BD,DPQ,Y,0.0,0.0,0,0.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,North Lake,26522,NLAKE,Receipt Location,R,DPQ,N,,,0,,N,Design Capacity is not available
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,North Lake,26522,NLAKE,Delivery Location,D,DPQ,Y,12000.0,12000.0,0,12000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,North Lake,26522,NLAKE,Receipt Location,BD,DPQ,N,,,0,,N,Design Capacity is not available
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Okeechobee Plant,30876,OKEE,Receipt Location,R,DPQ,N,,,0,,N,Design Capacity is not available
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Okeechobee Plant,30876,OKEE,Delivery Location,D,DPQ,Y,400000.0,400000.0,0,400000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Okeechobee Plant,30876,OKEE,Receipt Location,BD,DPQ,N,,,0,,N,Design Capacity is not available
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Riviera East - FGT,28698,RIVEAST,Receipt Location,R,RPQ,Y,250000.0,250000.0,0,250000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Riviera East - FGT,28698,RIVEAST,Delivery Location,D,RPQ,Y,0.0,0.0,0,0.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Riviera East - FGT,28698,RIVEAST,Receipt Location,BD,RPQ,Y,250000.0,250000.0,0,250000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Riviera Plant,1500,RIVPLANT,Receipt Location,R,DPQ,Y,0.0,0.0,0,0.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Riviera Plant,1500,RIVPLANT,Delivery Location,D,DPQ,Y,300000.0,300000.0,0,300000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Riviera Plant,1500,RIVPLANT,Receipt Location,BD,DPQ,Y,0.0,0.0,0,0.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Riviera West - FGT,1387752,RIVWEST,Receipt Location,R,RPQ,Y,300000.0,300000.0,0,300000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Riviera West - FGT,1387752,RIVWEST,Delivery Location,D,RPQ,Y,0.0,0.0,0,0.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,Riviera West - FGT,1387752,RIVWEST,Receipt Location,BD,RPQ,Y,300000.0,300000.0,0,300000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,SABAL Trail,96104,SABAL,Receipt Location,R,RPQ,Y,640000.0,640000.0,0,640000.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,SABAL Trail,96104,SABAL,Delivery Location,D,RPQ,Y,0.0,0.0,0,0.0,N,
+80371679,Florida Southeast Connection,09/26/2022 04:35:01 PM,09/27/2022,MMBtu,SABAL Trail,96104,SABAL,Receipt Location,BD,RPQ,Y,640000.0,640000.0,0,640000.0,N,

@@ -12,6 +12,7 @@ logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+# This scraper takes query params in GET request for downloading CSV.
 class FloridaSouthEast(PipelineScraper):
     source = "fsc.nexteraenergyresources.com"
     source_extensions = ['vgt', 'mgt', 'gpl']
@@ -35,10 +36,6 @@ class FloridaSouthEast(PipelineScraper):
     def __init__(self, job_id):
         PipelineScraper.__init__(self, job_id, web_url=self.api_url, source=self.source)
 
-    def set_request_params_date(self, post_date: date):
-        self.init_request_params.append(tuple(('startDate', post_date.strftime("%m/%d/%Y"))))
-        self.init_request_params.append(tuple(('endDate', post_date.strftime("%m/%d/%Y"))))
-
     def add_columns(self, df_tsp_data, df_data):
         df_data.insert(0, "TSP", df_tsp_data['TSP'].values[0], True)
         df_data.insert(1, "TSP Name", df_tsp_data['TSP Name'].values[0], True)
@@ -47,11 +44,14 @@ class FloridaSouthEast(PipelineScraper):
         df_data.insert(4, 'Meas Basis Desc', df_tsp_data['Meas Basis Desc'].values[0], True)
         return df_data
 
-    def start_scraping(self, post_date: date = None):
+    def start_scraping(self, post_date: date = None, cycle_id: int = None):
         post_date = post_date if post_date is not None else date.today()
+        cycle_id = cycle_id if cycle_id is not None else 10301
         try:
             logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
-            self.set_request_params_date(post_date=post_date)
+            self.init_request_params.append(tuple(('startDate', post_date.strftime("%m/%d/%Y"))))
+            self.init_request_params.append(tuple(('endDate', post_date.strftime("%m/%d/%Y"))))
+            self.init_request_params.append(tuple(('cycleId', cycle_id)))
 
             # Start the request for json response
             response = self.session.get(self.get_request_url, params=self.init_request_params)
@@ -82,10 +82,23 @@ class FloridaSouthEast(PipelineScraper):
 
 def main():
     query_date = datetime.fromisoformat("2022-09-26")
+    # 10303 - Intraday 1
+    # 10302 - Evening
+    # 10301 - Timely
+    # 10304 - Intraday 2
+    # 10305 - Intraday 3
+    cycle = 10301
 
-    # there are no cycles to choose from in OneOK websites
+    # This call with parameter , Custom date + custom cycle
+    # scraper.start_scraping(post_date=query_date, cycle=cycle)
+
+    # This call without date parameter. Use this if calling without parameter else the upper one.
+    # scraper.start_scraping(cycle=cycle)
+
+    # This call without either of date or cycle parameter which takes
+    # default date = today and default cycle = 10301
     scraper = FloridaSouthEast(job_id=str(uuid.uuid4()))
-    scraper.start_scraping(post_date=query_date)
+    scraper.start_scraping()
     scraper.scraper_info()
 
 
